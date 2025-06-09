@@ -18,7 +18,10 @@
 ## Ingestion
 
 - producer: a python script used to send 20 testing records from the dataset to our `Kinesis_Pipeline`.
+
   > Note: before running the command: `python ingestion/streaming_ingestion/producer.py`, please go download the dataset: **Online Retail.xlsx** from [UCI Machine Learning Repository](https://archive.ics.uci.edu/ml/datasets/Online+Retail), and then put the file under the `/data` folder.
+
+- batch_loader: a python script used to the full dataset directly to the lake(s3 bucket) as one file or split files -- simulating a bulk upload process
 
 ## Virtual Environment and Package Management
 
