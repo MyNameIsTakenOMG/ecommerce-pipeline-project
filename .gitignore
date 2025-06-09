@@ -17,6 +17,8 @@ build/
 .DS_Store
 
 # Data
+data/
+
 *.csv
 *.json
 *.zip

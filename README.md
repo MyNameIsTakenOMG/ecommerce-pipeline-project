@@ -3,6 +3,7 @@
 ## Table of Contents
 
 - Kinesis Pipeline[#kinesis-pipeline]
+- Ingestion[#ingestion]
 
 - Virtual Environment and Package Management[#virtual-environment-and-package-management]
 
@@ -13,6 +14,11 @@
   1. kinesis data stream
   2. kinesis firehose (a placeholder lambda function for stream processing -- enrich or filter data)
   3. s3 bucket for raw data
+
+## Ingestion
+
+- producer: a python script used to send 20 testing records from the dataset to our `Kinesis_Pipeline`.
+  > Note: before running the command: `python ingestion/streaming_ingestion/producer.py`, please go download the dataset: **Online Retail.xlsx** from [UCI Machine Learning Repository](https://archive.ics.uci.edu/ml/datasets/Online+Retail), and then put the file under the `/data` folder.
 
 ## Virtual Environment and Package Management
 
