@@ -4,7 +4,8 @@
 
 - Kinesis Pipeline[#kinesis-pipeline]
 - Ingestion[#ingestion]
-- Lake(#lake)
+- Lake[#lake]
+- Analytics[#analytics]
 
 - Virtual Environment and Package Management[#virtual-environment-and-package-management]
 
@@ -41,6 +42,27 @@
   - `Backfill scenarios`: If you receive historical data (e.g., monthly CSV dumps), you can crawl and immediately make them queryable before cleaning.
   - `Glue Catalog integration`: Even raw data tables are needed if you’re building full lineage tracking or a central catalog.
   - `Learning/debugging`: Crawling raw formats helps beginners understand partitioning, formats, compression effects, etc.
+
+## Analytics
+
+- Athena Queries:
+  - daily sales
+  - popular products
+  - sales by country
+  - top customers
+- Quicksight Charts:
+  <p align="center">
+    <img src="/analytics/quicksight_imgs/daily_sales.png" alt="daily_sales" width="700" height="430">
+  </p> 
+  <p align="center">
+    <img src="/analytics//quicksight_imgs/popular_products.png" alt="popular_products" width="700" height="430">
+  </p> 
+  <p align="center">
+    <img src="/analytics//quicksight_imgs/sales_by_country.png" alt="sales_by_country" width="700" height="430">
+  </p> 
+  <p align="center">
+    <img src="/analytics//quicksight_imgs/top_customers.png" alt="top_customers" width="700" height="430">
+  </p>
 
 <!-- - `ml/inference/`: Batch/real-time inference code using trained models
 - `rag/app/`: Frontend + API layer for demoing RAG interactions -->
