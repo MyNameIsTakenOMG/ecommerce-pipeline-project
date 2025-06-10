@@ -31,7 +31,16 @@
   - a glue crawler: an automated tools used to access your data store, identifies metadata, and creates table definitions in the AWS Glue Data Catalog
     > note: The AWS Glue Data Catalog is an index of your data’s location, schema, and runtime metrics.
 - `lake/glue_jobs/`: PySpark or Python-based Glue ETL jobs
-  - in our case, we have a python shell script as our etl job script for local testing purpose. We could convert it to AWS Glue ETL Job if need or switch to PySpark Job
+
+  - in our case, we have a python shell script as our etl job script for local testing purpose. We could convert it to AWS Glue ETL Job if need or switch to PySpark Job. For this project, we stick with the python shell script to keep it simple and cost-efficient.
+    > note: PySpark is working on a distributed computing system, which is ideal for heavy data processing jobs.
+
+- **BeAware**: in the Layer:Lake, we use a python shell etl job to scan the raw data stored in the s3 bucket. While in the real-world production systems, we often clean or transform data before making it queryable. However, still there are some reasons we would crawl raw data:
+  - `Exploratory access`: Crawling raw data lets analysts/data engineers inspect the data early via Athena, even before ETL jobs exist.
+  - `Schema inference`: Crawlers give you automatic schema discovery. This is super helpful for messy CSVs, external vendors, or IoT logs.
+  - `Backfill scenarios`: If you receive historical data (e.g., monthly CSV dumps), you can crawl and immediately make them queryable before cleaning.
+  - `Glue Catalog integration`: Even raw data tables are needed if you’re building full lineage tracking or a central catalog.
+  - `Learning/debugging`: Crawling raw formats helps beginners understand partitioning, formats, compression effects, etc.
 
 <!-- - `ml/inference/`: Batch/real-time inference code using trained models
 - `rag/app/`: Frontend + API layer for demoing RAG interactions -->
