@@ -2,20 +2,35 @@
 
 ## Table of Contents
 
-- Kinesis Pipeline[#kinesis-pipeline]
-- Ingestion[#ingestion]
-- Lake[#lake]
-- Analytics[#analytics]
+- [Kinesis Pipeline](#kinesis-pipeline)
+- [Ingestion](#ingestion)
+- [Lake](#lake)
+- [Analytic](#analytics)
 
-- Virtual Environment and Package Management[#virtual-environment-and-package-management]
+- [Virtual Environment and Package Management](#virtual-environment-and-package-management)
 
 ## Kinesis Pipeline
 
 - Architecture:
 
-  1. kinesis data stream
-  2. kinesis firehose (a placeholder lambda function for stream processing -- enrich or filter data)
-  3. s3 bucket for raw data
+> Note: we are now sticking with manual ETL job(`lake/glue_jobs/etl_raw_to_clean.py`). While for automating ETL processing, or setting S3 notification with ETL processing lambda, we must tweak the settings of the lambda (`memory`, `timeout`, `logger`) first, so that the reading and writing results can be seen more easily.
+
+1. kinesis data stream
+2. kinesis firehose (a placeholder lambda function for stream processing -- enrich or filter data)
+3. s3 bucket for raw data
+4. s3-notification lambda for automating ETL processing (commented out from the stack)
+   > Note: when dealing with S3-Notification, be aware that the **S3 object key** (i.e. the file path) from the event record is **URL-encoded**( characters like `space` will be encoded to `%20`), DO NOT forget to decode it before using it to fetch objects from the bucket.
+   > Note: for this lambda, we have to use packages: `awswrangler`,`pandas`, which are quite large for bundling, so we choose to use AWS pre-built layer.
+
+- **BeAware**:
+  - Note: for python lambda function, there is NO native `esbuild` equivalent like `NodejsFunction`, we have to either bundle the function and its dependencies manually or bundle them via `Docker`.
+  - Note: for python lambda function, if choosing to bundle function and dependencies manually, it is possible to encounter a type of issues, which may look like this `Runtime.ImportModuleError: Unable to import module 'etl_handler': Error importing numpy: you should not try to import numpy from...`.
+    - Reason: the packages like `numpy` will be installed with a specific version according to the underlying machines(Windows, MacOS, Linux), AWS Lambda is using Linux and if we use different OS on our local machine, then it will fail.
+    - Solution: use the command: `pip install -r requirements.txt --platform manylinux2014_x86_64 --only-binary=:all: -t python/`. Basically what you do is force a linux distribution.
+      - [related github repo issue](https://github.com/numpy/numpy/issues/13465)
+      - [AWS Lambda -- Python Layer](https://docs.aws.amazon.com/lambda/latest/dg/python-layers.html)
+  - Note: for python function or other types of function, we could install some very large packages, such `pyarrow`, `pandas`, etc. And we have a limit of 250mb lambda size, and in order to go over this limit, we have to use `Layers`.
+    - There are some AWS pre-built layers that we can use. The following link shows how to add layers from the lambda console as well as how to check the `ARN`s of those layers: [Lambda Layers](https://aws.amazon.com/blogs/aws/new-for-aws-lambda-use-any-programming-language-and-share-common-components/)
 
 ## Ingestion
 

@@ -23,7 +23,7 @@ df.dropna(
 
 date_str = datetime.now(timezone.utc).strftime("year=%Y/month=%m/day=%d")
 bucket_name = (
-    "kinesispipelinestack-rawdatabucket57f26c03-cgnqmjyo8tcv"  # your actual bucket name
+    "kinesispipelinestack-rawdatabucket57f26c03-tqnkpce4f8sp"  # your actual bucket name
 )
 key = f"lake/raw/batch/{date_str}/online_retail.csv"
 

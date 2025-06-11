@@ -6,7 +6,7 @@ import random
 from pathlib import Path
 
 # === CONFIG ===
-STREAM_NAME = "KinesisPipelineStack-RetailRawDataStream05819AA3-Y4TRcxabQiB3"  # your actual stream name
+STREAM_NAME = "KinesisPipelineStack-RetailRawDataStream05819AA3-jEZxUj0K39C8"  # your actual stream name
 REGION = "us-east-1"  # update if not us-east-1
 FILE_PATH = Path("data/online_retail.xlsx")  # adjust if stored elsewhere
 

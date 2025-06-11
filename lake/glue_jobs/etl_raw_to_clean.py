@@ -2,7 +2,7 @@ import awswrangler as wr
 import pandas as pd
 
 # bucket name
-bucket_name = "kinesispipelinestack-rawdatabucket57f26c03-cgnqmjyo8tcv"  # replace with your actual bucket name
+bucket_name = "kinesispipelinestack-rawdatabucket57f26c03-tqnkpce4f8sp"  # replace with your actual bucket name
 
 # Get the s3 location for the catalog table
 s3_path = wr.catalog.get_table_location(
