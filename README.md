@@ -136,7 +136,65 @@ This layer focuses on preparing data, training a model, and performing inference
         - joblib: model serialization
         - awswrangler: S3 + Glue-friendly data loading
 
-<!-- - `rag/app/`: Frontend + API layer for demoing RAG interactions -->
+  - customer segmentation: group customers into meaningful segments to understand their behavior and support personalization, marketing, and retention strategies.
+
+  <p align="center">
+  <img src="/ml/segmentation/imgs/customer_segments(PCA Projection).png" alt="customer_segments" width="700" height="430">
+  </p>
+
+  - Folder Structure
+
+    ```bash
+    ml/
+    ├── segmentation/
+    │   └── imgs/
+    │   │   └── customer_segments(PCA Projection).png  # K-Means clusters
+    │   ├── cluster_summary.py  # print the summary of clusters and interpret them
+    │   ├── cluster.py          # use KMeans model to segment clients into clusters
+    │   ├── data_prep.py          # create a customer feature csv from clean_batch glue table
+    │   ├── label_cluster.py          # attach labels to each cluster
+    │   ├── main_segment_query.sql    # the Athena query joining the "segment" table and "clean_batch" table
+    │   ├── requirements.in          # ML-specific dependencies
+    │   ├── upload_labeled_segments.py          # upload the labeled_customer_segments.csv to s3
+    │   ├── visualize.py          # visualize the clusters of clients
+    ```
+
+  - Steps:
+
+    1. Data Preparation (data_prep.py)
+
+    - Aggregated transactional data into customer-level features:
+      - total_spent, order_count, avg_basket_size, recency_days
+    - Cleaned and exported as customer_metrics.csv
+
+    2. Clustering with K-Means (cluster.py)
+
+    - Standardized features using StandardScaler
+    - Chose number of clusters (k=4) based on domain intuition
+    - Fitted KMeans and labeled each customer with a cluster
+
+    3. Cluster Interpretation
+
+    - Analyzed cluster centroids to infer behavior:
+      - e.g., "Elite VIP Customers", "Churned", "New Low Spenders", etc.
+
+    4. Customer Labeling (label.py)
+
+    - Attached readable segment names to each customer
+    - Saved as labeled_customer_segment.csv
+
+    5. Glue + Athena Integration
+
+    - Uploaded segment data to S3
+    - Added crawler target and reran crawler
+    - Joined labeled segments with transactional data in Athena for analysis
+
+  - what I learned
+    - The concept of unsupervised learning —- no labels, only patterns
+    - How clustering works in practice (distance, centroids, feature scaling)
+    - How to interpret clusters using real data
+    - How to join aggregated features back with the original dataset - How segmentation insights can support targeted business actions
+    <!-- - `rag/app/`: Frontend + API layer for demoing RAG interactions -->
 
 ## Virtual Environment and Package Management
 
