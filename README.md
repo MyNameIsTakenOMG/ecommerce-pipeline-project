@@ -6,6 +6,7 @@
 - [Ingestion](#ingestion)
 - [Lake](#lake)
 - [Analytic](#analytics)
+- [ML](#ml)
 
 - [Virtual Environment and Package Management](#virtual-environment-and-package-management)
 
@@ -13,7 +14,7 @@
 
 - Architecture:
 
-> Note: we are now sticking with manual ETL job(`lake/glue_jobs/etl_raw_to_clean.py`). While for automating ETL processing, or setting S3 notification with ETL processing lambda, we must tweak the settings of the lambda (`memory`, `timeout`, `logger`) first, so that the reading and writing results can be seen more easily.
+> Note: we are now sticking with manual ETL job(`lake/glue_jobs/etl_raw_to_clean.py`), because for automating ETL processing, or setting S3 notification with ETL processing lambda, we must tweak the settings of the lambda (`memory`, `timeout`, `logger`) first, so that the reading and writing results can be seen more easily.
 
 1. kinesis data stream
 2. kinesis firehose (a placeholder lambda function for stream processing -- enrich or filter data)
@@ -79,8 +80,63 @@
     <img src="/analytics//quicksight_imgs/top_customers.png" alt="top_customers" width="700" height="430">
   </p>
 
-<!-- - `ml/inference/`: Batch/real-time inference code using trained models
-- `rag/app/`: Frontend + API layer for demoing RAG interactions -->
+## ML
+
+This layer focuses on preparing data, training a model, and performing inference — ideally leveraging real-world workflows.
+
+- Goals:
+
+  - High-value invoices: To build an ML pipeline that predicts whether an invoice is high-value, as a first real ML application on the ecommerce dataset.
+
+    - Folder structure:
+
+      ```bash
+      ml/
+      ├── classification/
+      │   ├── train.py          # trains the model to classify invoices
+      │   ├── predict_high_value.py  # uses the model to make predictions
+      │   └── requirements.in   # ML-specific dependencies
+      ├── data_prep/
+      │   ├── clean_to_ml.py    # prepares a labeled dataset from the clean zone
+      ```
+
+    - Steps:
+
+      1. Data Preparation (`in data_prep/`)
+
+      - features:
+        - product_count: number of projects in the invoice
+        - total_amount: quantity \* unit price
+      - label each invoice as `high-value` if `total_amount>=1000`
+      - save to csv file
+
+      2. Model Training (`in classification/train.py`)
+
+      - read the csv file
+      - train a `RandomForestClassifier` on the features
+      - save the model in a `.joblib` file
+      - Evaluated with precision/recall/F1: ✅ All were 1.0 (overfitting expected on small dataset)
+
+      3. Inference (`in classification/predict_high_value.py`)
+
+      - load the model and test the model with test samples matching the training schema
+      - Got expected predictions (1 for high-value, 0 for not)
+
+    - what I learned
+      - ML = Data + Model + Purpose:
+        - You need a clear goal (e.g., invoice classification) and clean features.
+      - Data schema matters:
+        - The model expects inputs to match the training columns exactly — in name, number, and order.
+      - Training vs Inference:
+        - Training builds a model using known outcomes.
+        - Inference applies that model to new, unknown cases.
+      - Tools used:
+        - pandas: data handling
+        - sklearn: modeling
+        - joblib: model serialization
+        - awswrangler: S3 + Glue-friendly data loading
+
+<!-- - `rag/app/`: Frontend + API layer for demoing RAG interactions -->
 
 ## Virtual Environment and Package Management
 

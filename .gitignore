@@ -26,3 +26,4 @@ data/
 *.zip
 *.tar
 *.pkl
+*.joblib
