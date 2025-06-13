@@ -53,6 +53,7 @@ class GlueCatalogStack(Stack):
                 "s3Targets": [
                     {"path": f"s3://{bucket_name}/lake/raw/batch/"},
                     # {"path": f"s3://{bucket_name}/lake/raw/stream/"}, # Uncomment if you have a stream path
+                    {"path": f"s3://{bucket_name}/lake/analytics/customer_segments/"},
                 ]
             },
             schema_change_policy={
