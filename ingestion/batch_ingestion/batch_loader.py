@@ -2,6 +2,12 @@ import boto3
 import pandas as pd
 from pathlib import Path
 from datetime import datetime, timezone
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+bucket_name = os.getenv("RAW_BUCKET_NAME")
 
 s3 = boto3.client("s3")
 
@@ -22,9 +28,6 @@ df.dropna(
 )
 
 date_str = datetime.now(timezone.utc).strftime("year=%Y/month=%m/day=%d")
-bucket_name = (
-    "kinesispipelinestack-rawdatabucket57f26c03-tqnkpce4f8sp"  # your actual bucket name
-)
 key = f"lake/raw/batch/{date_str}/online_retail.csv"
 
 # Save locally then upload

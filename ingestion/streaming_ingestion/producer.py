@@ -4,9 +4,13 @@ import pandas as pd
 import time
 import random
 from pathlib import Path
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 # === CONFIG ===
-STREAM_NAME = "KinesisPipelineStack-RetailRawDataStream05819AA3-jEZxUj0K39C8"  # your actual stream name
+STREAM_NAME = os.getenv("RAW_STREAM_NAME")
 REGION = "us-east-1"  # update if not us-east-1
 FILE_PATH = Path("data/online_retail.xlsx")  # adjust if stored elsewhere
 

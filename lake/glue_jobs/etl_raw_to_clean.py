@@ -1,8 +1,11 @@
 import awswrangler as wr
 import pandas as pd
+from dotenv import load_dotenv
+import os
 
-# bucket name
-bucket_name = "kinesispipelinestack-rawdatabucket57f26c03-tqnkpce4f8sp"  # replace with your actual bucket name
+load_dotenv()
+
+bucket_name = os.getenv("RAW_BUCKET_NAME")
 
 # Get the s3 location for the catalog table
 s3_path = wr.catalog.get_table_location(

@@ -6,6 +6,11 @@ from aws_cdk import (
     aws_iam as iam,
 )
 from constructs import Construct
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+bucket_name = os.getenv("RAW_BUCKET_NAME")
 
 
 class GlueCatalogStack(Stack):
@@ -14,9 +19,6 @@ class GlueCatalogStack(Stack):
         super().__init__(scope, construct_id, **kwargs)
 
         # The code that defines your stack goes here
-
-        # bucket name
-        bucket_name = "kinesispipelinestack-rawdatabucket57f26c03-tqnkpce4f8sp"  # replace with your actual bucket name
 
         # Glue Database for the raw data
         glue_database = glue.CfnDatabase(
