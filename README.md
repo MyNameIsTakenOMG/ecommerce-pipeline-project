@@ -138,63 +138,118 @@ This layer focuses on preparing data, training a model, and performing inference
 
   - customer segmentation: group customers into meaningful segments to understand their behavior and support personalization, marketing, and retention strategies.
 
-  <p align="center">
-  <img src="/ml/segmentation/imgs/customer_segments(PCA Projection).png" alt="customer_segments" width="700" height="430">
-  </p>
+    <p align="center">
+    <img src="/ml/segmentation/imgs/customer_segments(PCA Projection).png" alt="customer_segments" width="700" height="430">
+    </p>
 
-  - Folder Structure
+    - Folder Structure
 
-    ```bash
-    ml/
-    ├── segmentation/
-    │   └── imgs/
-    │   │   └── customer_segments(PCA Projection).png  # K-Means clusters
-    │   ├── cluster_summary.py  # print the summary of clusters and interpret them
-    │   ├── cluster.py          # use KMeans model to segment clients into clusters
-    │   ├── data_prep.py          # create a customer feature csv from clean_batch glue table
-    │   ├── label_cluster.py          # attach labels to each cluster
-    │   ├── main_segment_query.sql    # the Athena query joining the "segment" table and "clean_batch" table
-    │   ├── requirements.in          # ML-specific dependencies
-    │   ├── upload_labeled_segments.py          # upload the labeled_customer_segments.csv to s3
-    │   ├── visualize.py          # visualize the clusters of clients
-    ```
+      ```bash
+      ml/
+      ├── segmentation/
+      │   └── imgs/
+      │   │   └── customer_segments(PCA Projection).png  # K-Means clusters
+      │   ├── cluster_summary.py  # print the summary of clusters and interpret them
+      │   ├── cluster.py          # use KMeans model to segment clients into clusters
+      │   ├── data_prep.py          # create a customer feature csv from clean_batch glue table
+      │   ├── label_cluster.py          # attach labels to each cluster
+      │   ├── main_segment_query.sql    # the Athena query joining the "segment" table and "clean_batch" table
+      │   ├── requirements.in          # ML-specific dependencies
+      │   ├── upload_labeled_segments.py          # upload the labeled_customer_segments.csv to s3
+      │   ├── visualize.py          # visualize the clusters of clients
+      ```
 
-  - Steps:
+    - Steps:
 
-    1. Data Preparation (data_prep.py)
+      1. Data Preparation (data_prep.py)
 
-    - Aggregated transactional data into customer-level features:
-      - total_spent, order_count, avg_basket_size, recency_days
-    - Cleaned and exported as customer_metrics.csv
+      - Aggregated transactional data into customer-level features:
+        - total_spent, order_count, avg_basket_size, recency_days
+      - Cleaned and exported as customer_metrics.csv
 
-    2. Clustering with K-Means (cluster.py)
+      2. Clustering with K-Means (cluster.py)
 
-    - Standardized features using StandardScaler
-    - Chose number of clusters (k=4) based on domain intuition
-    - Fitted KMeans and labeled each customer with a cluster
+      - Standardized features using StandardScaler
+      - Chose number of clusters (k=4) based on domain intuition
+      - Fitted KMeans and labeled each customer with a cluster
 
-    3. Cluster Interpretation
+      3. Cluster Interpretation
 
-    - Analyzed cluster centroids to infer behavior:
-      - e.g., "Elite VIP Customers", "Churned", "New Low Spenders", etc.
+      - Analyzed cluster centroids to infer behavior:
+        - e.g., "Elite VIP Customers", "Churned", "New Low Spenders", etc.
 
-    4. Customer Labeling (label.py)
+      4. Customer Labeling (label.py)
 
-    - Attached readable segment names to each customer
-    - Saved as labeled_customer_segment.csv
+      - Attached readable segment names to each customer
+      - Saved as labeled_customer_segment.csv
 
-    5. Glue + Athena Integration
+      5. Glue + Athena Integration
 
-    - Uploaded segment data to S3
-    - Added crawler target and reran crawler
-    - Joined labeled segments with transactional data in Athena for analysis
+      - Uploaded segment data to S3
+      - Added crawler target and reran crawler
+      - Joined labeled segments with transactional data in Athena for analysis
 
-  - what I learned
-    - The concept of unsupervised learning —- no labels, only patterns
-    - How clustering works in practice (distance, centroids, feature scaling)
-    - How to interpret clusters using real data
-    - How to join aggregated features back with the original dataset - How segmentation insights can support targeted business actions
-    <!-- - `rag/app/`: Frontend + API layer for demoing RAG interactions -->
+    - what I learned
+      - The concept of unsupervised learning —- no labels, only patterns
+      - How clustering works in practice (distance, centroids, feature scaling)
+      - How to interpret clusters using real data
+      - How to join aggregated features back with the original dataset - How segmentation insights can support targeted business actions
+      <!-- - `rag/app/`: Frontend + API layer for demoing RAG interactions -->
+
+  - Product Recommendation with ALS: to build a product recommendation system that suggests relevant products to users based on their past purchasing behavior.
+
+    - tools & libraries
+
+      - pandas: for data wrangling
+      - scipy.sparse: to build sparse matrices
+      - implicit: ALS-based collaborative filtering model
+      - joblib: model persistence
+
+    - Dataset: we prepare the _dataset_ out of _temp.csv_, which was generated by the file: `ingestion/batch_ingestion/batch_loader.py` instead of reading the data via AWS Glue Table: `clean_table` to save costs. The input for recommendation is a user-item interaction matrix, built by aggregating quantities of each product purchased by each customer.
+
+    - Steps:
+
+      1. Data Preparation (data_prep.py)
+
+      - Source: temp.csv (raw data)
+      - Transformations:
+        - Drop rows with null CustomerID, InvoiceDate, or Description
+        - Normalize column types: convert CustomerID and StockCode to strings
+        - Aggregate Quantity by (CustomerID, StockCode) to get TotalQuantity
+        - Output saved to user_item_interactions.csv
+
+      2. Model Training (train.py)
+
+      - Built sparse matrix using coo_matrix
+      - Categorical encoding of users/items for internal mapping
+      - Trained ALS model with
+      - Persisted model and mappings with joblib
+      - Defensive checks:
+        - Filtered out rows with non-numeric or missing CustomerID, StockCode
+        - Removed rows where TotalQuantity <= 0
+
+      3. Model Prediction (predict.py)
+
+      - Load model and mappings
+      - Convert input CustomerID to internal ALS ID
+      - Generate Top-5 recommended item IDs
+      - Map internal item IDs back to original StockCode
+      - Handle edge cases:
+        - Unmapped customer or item IDs
+        - Missing products in the final mapping due to bad training records
+
+    - insights:
+
+      - Sparse Matrix: Enabled efficient computation for tens of thousands of user-item interactions.
+      - Latent Factors: Each user and item was projected into a 50-dimensional space capturing behavioral signals.
+      - Data Cleanliness: Crucial to success. We observed that bad or missing StockCodes can silently reduce mapping consistency.
+
+    - What I learned:
+      - How to build a recommendation system using implicit matrix factorization (ALS)
+      - The importance of data preprocessing in collaborative filtering
+      - How mappings between raw IDs and internal model IDs are essential
+      - The role of sparse matrices and how implicit leverages them
+      - The distinction between training-time mappings and inference-time logic
 
 ## Virtual Environment and Package Management
 
