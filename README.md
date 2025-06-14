@@ -7,6 +7,7 @@
 - [Lake](#lake)
 - [Analytic](#analytics)
 - [ML](#ml)
+- [Notebooks](#notebooks)
 
 - [Virtual Environment and Package Management](#virtual-environment-and-package-management)
 
@@ -250,6 +251,75 @@ This layer focuses on preparing data, training a model, and performing inference
       - How mappings between raw IDs and internal model IDs are essential
       - The role of sparse matrices and how implicit leverages them
       - The distinction between training-time mappings and inference-time logic
+
+## Notebooks
+
+This section of the project provided hands-on experience with various exploratory and diagnostic tasks using Python, pandas, and visualization libraries. The main goal was to understand, clean, profile, and visualize data — critical steps that bridge raw data and applied ML/AI work.
+
+- Exploratory Data Analysis (EDA): Get a basic understanding of the structure, distributions, and relationships in the data.
+  - Dataset Used: user_item_interactions.csv (from the recommendation layer)
+  - Libraries: pandas, seaborn, matplotlib
+  - Tasks Completed:
+    - Viewed data structure and sample rows
+    - Checked data types and missing values
+    - Generated distribution plots and bar charts for quantity, customer activity, and item frequency
+  - Learnings:
+    - EDA is the first and essential step before modeling.
+    - Seaborn makes it easy to create meaningful visualizations from tabular data.
+- Data Profiling: Auto-generate a comprehensive report of the dataset to inspect data types, correlations, missing values, and distributions.
+  - Tool Used: ydata-profiling (formerly pandas-profiling)
+  - Output: profiling_report.html
+  - Learnings:
+    - Profiling tools can save time by offering a full overview at once.
+    - Useful for spotting anomalies or insights (e.g., skewed columns, strong correlations).
+    - Integration with notebooks or scripts is straightforward.
+    - Minor package compatibility issues were resolved by isolating into a temporary virtual environment.
+- Data Cleaning: Apply typical data cleaning techniques to improve data quality and consistency.
+  - Tasks Completed:
+    - Removed missing and duplicate entries
+    - Standardized column names and date formats
+    - Added derived column TotalPrice = Quantity × UnitPrice
+    - Saved the cleaned dataset for downstream tasks
+  - Learnings:
+    - Cleaning logic is often dataset-specific and iterative.
+    - Important to check for weird values and structural inconsistencies (e.g., negative prices).
+- Feature Engineering: Enhance the dataset with new, meaningful variables derived from raw columns to support analysis and modeling.
+  - Tasks Completed:
+    - Created TotalPrice = Quantity × UnitPrice
+    - Extracted InvoiceDate into datetime format (enabling time-based analysis)
+    - Aggregated data by customer and item to derive spend and frequency patterns (used later in segmentation and recommendation tasks)
+  - Learnings:
+    - Feature engineering transforms data from "raw signals" to "actionable insights".
+    - It bridges raw values and ML-ready inputs (e.g., customer behavior metrics).
+    - Small transformations (like TotalPrice) can drastically increase analytical power.
+- Visualization: Build more advanced visualizations to explore customer behavior and purchase patterns.
+
+  - Tasks Completed:
+    - Line plot of total sales over time
+    - Bar plots for top customers and top products
+    - Libraries: Combined matplotlib (for figure handling) and seaborn (for styling and plotting)
+  - Generated Charts:
+    <p align="center">
+    <img src="/notebooks/notebooks_visual/fig_total_spent_vs_order_count.png" alt="spent_vs_count" width="700" height="500">
+    </p>
+    <p align="center">
+    <img src="/notebooks/notebooks_visual/fig_total_spent_vs_avg_basket_size.png" alt="spent_vs_basket" width="700" height="500">
+    </p>
+    <p align="center">
+    <img src="/notebooks/notebooks_visual/fig_recency_vs_total_spent.png" alt="spent_vs_recency" width="700" height="500">
+    </p>
+    <p align="center">
+    <img src="/notebooks/notebooks_visual/fig_correlation_matrix.png" alt="customer correlation matrix" width="700" height="500">
+    </p>
+  - Learnings:
+    - Visualization can instantly reveal trends and anomalies.
+    - matplotlib provides base plotting while seaborn adds statistical and stylistic power
+    - It’s common to mix them — e.g., setting up a fig with matplotlib and plotting with seaborn
+
+- Final Notes:
+  - A temporary virtual environment was used for profiling to avoid CDK conflicts (due to typeguard dependency).
+  - The generated HTML profiling report was excluded via .gitignore to avoid bloating the repo.
+  - This section helped reinforce how raw datasets must be explored and understood before modeling.
 
 ## Virtual Environment and Package Management
 
