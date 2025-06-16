@@ -18,6 +18,7 @@ Each layer is modular but interconnected, and most rely on artifacts produced by
 ## Table of Contents
 
 - [How to use](#how-to-use)
+- [Clean up](#clean-up)
 - [Kinesis Pipeline](#kinesis-pipeline)
 - [Ingestion](#ingestion)
 - [Lake](#lake)
@@ -80,6 +81,10 @@ Each layer is modular but interconnected, and most rely on artifacts produced by
 - Always remember to install packages for each sub project via command: `pip install -r <path>/requirements.txt` before running scripts or testing projects.
 - Adjust paths accordingly if you're running from different working directories.
 - Always activate the correct virtual environment before running any scripts.
+
+- Clean up
+
+This project contains 2 AWS CDK projects: `infrastructure/kinesis_pipeline`, `lake/glue_catalog`. Please Do Not Forget to destroy these 2 stacks when finishing with the project.
 
 ## Kinesis Pipeline
 

@@ -20,6 +20,9 @@ python/
 # Data
 data/
 
+# Download
+download/
+
 *.csv
 *.json
 *.zip
